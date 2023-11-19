@@ -1,0 +1,47 @@
+RewriteEngine On
+
+
+#Activar si no podemos redirigir nuestro dominio a la carpeta public_html
+##RewriteCond %{HTTP_HOST} ^midominio\.com$ [OR]
+##RewriteCond %{HTTP_HOST} ^www\.midominio\.com$
+##RewriteCond %{REQUEST_URI} !^/public_html/
+##RewriteRule (.*) /public_html/$1 [L]
+
+# evitamos que se puedan ver los directorios si no hay un archivo index
+# Options All -Indexes
+# Disable directory browsing
+Options -Indexes
+# Hide the contents of directories
+IndexIgnore *
+
+# por si acaso tenemos el directorio git, evitamos que se pueda ver
+RedirectMatch 404 /\.git
+
+# impedir que se vea el archivo  .htaccess | ya esta protegido, pero una protección adicional
+<Files .htaccess>
+  Order allow,deny
+  Deny from all
+</Files>
+
+# Override PHP settings that cannot be changed at runtime.
+# PHP 5, Apache 1 and 2.
+<IfModule mod_php5.c>
+  php_flag magic_quotes_gpc                 off
+  php_flag magic_quotes_sybase              off
+  php_flag register_globals                 off
+  php_flag session.auto_start               off
+  php_value mbstring.http_input             pass
+  php_value mbstring.http_output            pass
+  php_flag mbstring.encoding_translation    off
+</IfModule>
+
+
+#######
+# evitamos que salgan los errores  si esta configurado php.ini para que muestre todos los errores
+<IfModule mod_php5.c>
+php_flag display_startup_errors off
+php_flag display_errors off
+php_flag html_errors off
+php_value docref_root 0
+php_value docref_ext 0
+</IfModule>
